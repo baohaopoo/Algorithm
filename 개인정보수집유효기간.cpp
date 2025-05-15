@@ -1,73 +1,91 @@
+#include <iostream>
 #include <string>
 #include <vector>
 #include <map>
-#include<iostream>
 using namespace std;
+string GetGoal(string& Privacy, int typeMonth)
+{
+	string GoalStr = "";
 
+	string YYstr = "";
+	YYstr += Privacy[0];
+	YYstr += Privacy[1];
+	YYstr += Privacy[2];
+	YYstr += Privacy[3];
+	int YYNum = stoi(YYstr);
 
+	string MMstr = "";
+	MMstr += Privacy[5];
+	MMstr += Privacy[6];
+	int MMNum = stoi(MMstr);
+
+	string DDstr = "";
+	DDstr += Privacy[8];
+	DDstr += Privacy[9];
+	int DDNum = stoi(DDstr);
+
+	//cout<<YYNum<<","<<MMNum<<","<<DDNum<<endl;
+
+	MMNum += typeMonth;
+
+	YYNum += MMNum / 12;
+	DDNum -= 1;
+
+	if (MMNum > 12)
+		MMNum -= 13;
+
+	if (DDNum < 1)
+	{
+		MMNum -= 1;
+		DDNum = 28;
+	}
+
+	//cout<<YYNum<<","<<MMNum<<","<<DDNum<<endl;
+
+	GoalStr += to_string(YYNum);
+	GoalStr += ".";
+	if (MMNum < 10)
+		GoalStr += "0";
+	GoalStr += to_string(MMNum);
+	GoalStr += ".";
+	if (DDNum < 10)
+		GoalStr += "0";
+	GoalStr += to_string(DDNum);
+	return GoalStr;
+
+}
 vector<int> solution(string today, vector<string> terms, vector<string> privacies) {
 	vector<int> answer;
 
-	map<string, string> Table;
-
-	for (int i = 0; i < terms.size(); ++i)
+	map<char, int> standardMap;
+	for (string ele : terms) //  A 6 
 	{
-		string standardStr = terms[i].substr(0, terms[i].find(" "));
-		string MonthStr = terms[i].substr(terms[i].find(" "), terms[i].length());
-
-		string YYstr = ""; //2021
-		YYstr += standardStr[0];
-		YYstr += standardStr[1];
-		YYstr += standardStr[2];
-		YYstr += standardStr[3];
-
-		string MMstr = ""; //11
-		MMstr += standardStr[5];
-		MMstr += standardStr[6];
-
-		string Daystr = ""; //15
-		Daystr += standardStr[8];
-		Daystr += standardStr[9];
-
-		int Year = stoi(YYstr);
-		int Month = stoi(MMstr);
-		int Day = stoi(Daystr);
-
-		cout << Year << "," << Month << "," << Day << endl;
-
-		int goalYear = 0;
-		int goalMonth = stoi(MMstr) + stoi(MonthStr);
-
-		if (goalMonth >= 12)
-		{
-			goalYear = stoi(YYstr) + (goalMonth / 12);
-		}
-	
-		res += to_string(goalYear);
-		res += ".";
-
-		// Table[standardStr] = //´õÇÑ °ª.
+		string day = ele.substr(ele.find(" "), ele.length());
+		standardMap[ele[0]] = stoi(day);
 	}
 
-	for (int i = 0; i < privacies.size(); ++i)
+	for (string ele : privacies)
 	{
-		string standardStr = privacies[i].substr(privacies[i].find(" "), privacies[i].length());
-		string PrivacyStr = privacies[i].substr(0, privacies[i].find(" "));
+		string PrivacyStr = ele.substr(0, ele.find(" ")); //2021.05.02
+		int TypeMonth = standardMap[ele[ele.size() - 1]]; //A - 6
+		string GoalStr = GetGoal(PrivacyStr, TypeMonth); //2021.06.01
 
-		for (int j = 0; j < PrivacyStr.size(); ++j)
+		//cout<<PrivacyStr<<endl;
+		//cout<<GoalStr<<endl;
+		//cout<<"-----------------------"<<endl;
+
+
+		cout << today << endl;
+		cout << GoalStr << endl;
+
+		for (int i = 0; i < today.size(); ++i)
 		{
-			int current = stoi(PrivacyStr);
-			int Future = 0;
-			if (Table.find(standardStr) != Table.end())
+			if (today[i] - '0' > GoalStr[i] - '0')
 			{
-				Future = stoi(Table[standardStr]);
-			}
-
-			if (current > Future)
-			{
-				answer.push_back(i);
+				continue;
 			}
 		}
+		//cout<<endl;
 	}
 
 	return answer;
