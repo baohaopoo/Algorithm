@@ -24,23 +24,21 @@ string GetGoal(string& Privacy, int typeMonth)
 	DDstr += Privacy[9];
 	int DDNum = stoi(DDstr);
 
-	//cout<<YYNum<<","<<MMNum<<","<<DDNum<<endl;
-
 	MMNum += typeMonth;
 
-	YYNum += MMNum / 12;
-	DDNum -= 1;
-
 	if (MMNum > 12)
-		MMNum -= 13;
-
-	if (DDNum < 1)
 	{
-		MMNum -= 1;
-		DDNum = 28;
+		YYNum += MMNum / 12;
+		MMNum -= 12;
 	}
 
-	//cout<<YYNum<<","<<MMNum<<","<<DDNum<<endl;
+	if (DDNum - 1 < 1)
+	{
+		DDNum = 28;
+		MMNum -= 1;
+	}
+	else
+		DDNum -= 1;
 
 	GoalStr += to_string(YYNum);
 	GoalStr += ".";
@@ -64,28 +62,28 @@ vector<int> solution(string today, vector<string> terms, vector<string> privacie
 		standardMap[ele[0]] = stoi(day);
 	}
 
-	for (string ele : privacies)
+	cout << today << endl;
+
+	for (int j = 0; j < privacies.size(); ++j)
 	{
-		string PrivacyStr = ele.substr(0, ele.find(" ")); //2021.05.02
-		int TypeMonth = standardMap[ele[ele.size() - 1]]; //A - 6
+
+		string PrivacyStr = privacies[j].substr(0, privacies[j].find(" ")); //2021.05.02
+		int TypeMonth = standardMap[privacies[j][privacies[j].size() - 1]]; //A - 6
 		string GoalStr = GetGoal(PrivacyStr, TypeMonth); //2021.06.01
-
-		//cout<<PrivacyStr<<endl;
-		//cout<<GoalStr<<endl;
-		//cout<<"-----------------------"<<endl;
-
-
-		cout << today << endl;
-		cout << GoalStr << endl;
 
 		for (int i = 0; i < today.size(); ++i)
 		{
-			if (today[i] - '0' > GoalStr[i] - '0')
+			if (today[i] != GoalStr[i])
 			{
-				continue;
+				if (today[i] - '0' > GoalStr[i] - '0')
+				{
+					answer.push_back(j + 1);
+					break;
+				}
+				else
+					break;
 			}
 		}
-		//cout<<endl;
 	}
 
 	return answer;
