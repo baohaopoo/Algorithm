@@ -3,55 +3,17 @@
 #include <vector>
 #include <map>
 using namespace std;
-string GetGoal(string& Privacy, int typeMonth)
+
+int CalculateTotal(int YYNum, int MMNum, int DDNum, int TypeMonth)
 {
-	string GoalStr = "";
+	int Total = (YYNum * (28 * 12)) + (MMNum * 28) + DDNum;
+	cout << Total << endl;
 
-	string YYstr = "";
-	YYstr += Privacy[0];
-	YYstr += Privacy[1];
-	YYstr += Privacy[2];
-	YYstr += Privacy[3];
-	int YYNum = stoi(YYstr);
+	Total += (TypeMonth * 28);
 
-	string MMstr = "";
-	MMstr += Privacy[5];
-	MMstr += Privacy[6];
-	int MMNum = stoi(MMstr);
-
-	string DDstr = "";
-	DDstr += Privacy[8];
-	DDstr += Privacy[9];
-	int DDNum = stoi(DDstr);
-
-	MMNum += typeMonth;
-
-	if (MMNum > 12)
-	{
-		YYNum += MMNum / 12;
-		MMNum -= 12;
-	}
-
-	if (DDNum - 1 < 1)
-	{
-		DDNum = 28;
-		MMNum -= 1;
-	}
-	else
-		DDNum -= 1;
-
-	GoalStr += to_string(YYNum);
-	GoalStr += ".";
-	if (MMNum < 10)
-		GoalStr += "0";
-	GoalStr += to_string(MMNum);
-	GoalStr += ".";
-	if (DDNum < 10)
-		GoalStr += "0";
-	GoalStr += to_string(DDNum);
-	return GoalStr;
-
+	return Total;
 }
+
 vector<int> solution(string today, vector<string> terms, vector<string> privacies) {
 	vector<int> answer;
 
@@ -62,28 +24,30 @@ vector<int> solution(string today, vector<string> terms, vector<string> privacie
 		standardMap[ele[0]] = stoi(day);
 	}
 
-	cout << today << endl;
-
 	for (int j = 0; j < privacies.size(); ++j)
 	{
 
-		string PrivacyStr = privacies[j].substr(0, privacies[j].find(" ")); //2021.05.02
+		string PrivacyStr = privacies[j].substr(0, 10);
 		int TypeMonth = standardMap[privacies[j][privacies[j].size() - 1]]; //A - 6
-		string GoalStr = GetGoal(PrivacyStr, TypeMonth); //2021.06.01
 
-		for (int i = 0; i < today.size(); ++i)
-		{
-			if (today[i] != GoalStr[i])
-			{
-				if (today[i] - '0' > GoalStr[i] - '0')
-				{
-					answer.push_back(j + 1);
-					break;
-				}
-				else
-					break;
-			}
-		}
+		//목표 일수
+		string GoalYYstr = "";
+
+		int GoalYYNum = stoi(PrivacyStr.substr(0, 4));
+		int GoalMMNum = stoi(PrivacyStr.substr(5, 2));
+		int GoalDDNum = stoi(PrivacyStr.substr(8, 2));
+
+		int GoalTotal = CalculateTotal(GoalYYNum, GoalMMNum, GoalDDNum, TypeMonth) - 1;
+
+		//오늘 일수
+		int TodayYYNum = stoi(today.substr(0, 4));
+		int TodayMMNum = stoi(today.substr(5, 2));
+		int TodayDDNum = stoi(today.substr(8, 2));
+
+		int Todaytotal = CalculateTotal(TodayYYNum, TodayMMNum, TodayDDNum, 0);
+
+		if (GoalTotal < Todaytotal)
+			answer.push_back((j + 1));
 	}
 
 	return answer;
