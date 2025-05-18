@@ -2,21 +2,29 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <map>
 using namespace std;
 
 vector<string> solution(vector<string> players, vector<string> callings) {
 
-	//swap 정렬 
-	//Players를 정렬한다.
-	//calling에서 value값이 players 몇번째 문자열인지  찾아냄.
+	map<string, int> map;
+
+	int cnt = 0;
+	for (string ele : players)
+	{
+		map.insert(pair(ele, cnt));
+		cnt++;
+	}
 
 	for (int i = 0; i < callings.size(); ++i)
 	{
-		auto iter = find(players.begin(), players.end(), callings[i]);
-		iter_swap(iter, iter - 1);
+		int index = map[callings[i]];
+		if (index > 0)
+		{
+			map[players[index - 1]] = index;
+			map[players[index]] = index - 1;
+			swap(players[index], players[index - 1]);
+		}
 	}
-
 	return players;
 }
-
-//버전 투 도 시간초과남.
