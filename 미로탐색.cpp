@@ -8,19 +8,26 @@ int solution(vector<string> maps) {
 
 	vector<vector<char>> MapV;
 	vector<char> LowV;
+	int startposX = 0;
+	int startposY = 0;
 
 	for (int i = 0; i < maps.size(); ++i)
 	{
 		LowV.clear();
 		for (int j = 0; j < maps[i].size(); ++j)
 		{
+			if (maps[i][j] == 'S')
+			{
+				startposX = i;
+				startposY = j;
+			}
 			LowV.push_back(maps[i][j]);
 		}
 		MapV.push_back(LowV);
 	}
 
 	queue<pair<int, int>> q;
-	q.push({ 0,0 });
+	q.push({ startposX,startposY });
 	char target = 'S';
 
 	int dx[4] = { -1,0,1,0 };
@@ -45,7 +52,7 @@ int solution(vector<string> maps) {
 			if (target == 'E')
 				return answer;
 
-			if (nextx < 0 || nexty < 0 || nextx >= MapV[0].size() || nexty >= MapV[0].size())
+			if (nextx < 0 || nexty < 0 || nextx >= MapV.size() || nexty >= MapV[0].size())
 				continue;
 
 			if (MapV[nextx][nexty] == 'X')
