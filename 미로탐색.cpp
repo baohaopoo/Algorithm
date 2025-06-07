@@ -2,13 +2,7 @@
 #include <vector>
 #include <queue>
 using namespace std;
-void BFS(queue<pair<int, int>>& q, int& answer, vector<vector<bool>>& visited)
-{
-	//시작 지점을 찾았다는 얘기.
-	auto [curx, cury] = q.front();
 
-
-}
 int solution(vector<string> maps) {
 	int answer = 0;
 
@@ -17,17 +11,17 @@ int solution(vector<string> maps) {
 
 	for (int i = 0; i < maps.size(); ++i)
 	{
+		LowV.clear();
 		for (int j = 0; j < maps[i].size(); ++j)
 		{
-			LowV.clear();
 			LowV.push_back(maps[i][j]);
 		}
 		MapV.push_back(LowV);
 	}
 
-	vector<vector<bool>> visited(MapV.size(), vector<bool>(MapV[0].size(), false));
 	queue<pair<int, int>> q;
 	q.push({ 0,0 });
+	char target = 'S';
 
 	int dx[4] = { -1,0,1,0 };
 	int dy[4] = { 0,-1,0,1 };
@@ -36,37 +30,38 @@ int solution(vector<string> maps) {
 	{
 		auto [curx, cury] = q.front();
 		q.pop();
-		visited[curx][cury] = true;
 
-		if (MapV[curx][cury] != 'S')
+		for (int i = 0; i < 4; ++i)
 		{
-			for (int i = 0; i < 4; ++i)
+			int nextx = curx + dx[i];
+			int nexty = cury + dy[i];
+
+			char nextTarget;
+
+			if (target == 'S')
+				nextTarget = 'L';
+			if (target == 'L')
+				nextTarget = 'E';
+			if (target == 'E')
+				return answer;
+
+			if (nextx < 0 || nexty < 0 || nextx >= MapV[0].size() || nexty >= MapV[0].size())
+				continue;
+
+			if (MapV[nextx][nexty] == 'X')
+				continue;
+
+			if (MapV[curx][cury] == target || MapV[curx][cury] == 'O')
 			{
-				int nextx = curx + dx[i];
-				int nexty = cury + dy[i];
-
-				if (MapV[nextx][nexty] == 'S')
-				{
-					queue<pair<int, int>> nextq;
-					nextq.push({ nextx,nexty });
-					BFS(nextq, answer, visited);
-				}
-
+				if (MapV[curx][cury] == target && target != 'S')
+					answer++;
+				target = nextTarget;
+				q.push({ nextx,nexty });
 			}
-			continue;
-		}
-		else
-		{
-			for (int i = 0; i < 4; ++i)
-			{
-				int nextx = curx + dx[i];
-				int nexty = cury + dy[i];
 
-				queue<pair<int, int>> nextq;
-				nextq.push({ nextx,nexty });
-				BFS(nextq, answer, visited);
-			}
 		}
 	}
+
+
 	return answer;
 }
